@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#081225">
+  <title>WM-Tippspiel 2026</title>
+  <style>
+    :root{
+      --bg:#082a56;--bg2:#0b3b78;--card:rgba(255,255,255,.095);--card2:rgba(255,255,255,.15);
+      --line:rgba(255,215,96,.24);--text:#fffaf0;--muted:rgba(255,250,240,.73);
+      --accent:#f5c84b;--accent2:#ffe28c;--accent3:#d7a72f;--warn:#ffd166;--danger:#ff6170;--ok:#65f2a2;
+      --shadow:0 22px 60px rgba(0,18,46,.34);--r:24px;--safe:env(safe-area-inset-bottom,0px);
+    }
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+    body{
+      padding-bottom:calc(88px + var(--safe));
+      background:
+        radial-gradient(circle at 16% -5%,rgba(255,216,94,.18),transparent 32%),
+        radial-gradient(circle at 88% 2%,rgba(69,159,255,.28),transparent 34%),
+        radial-gradient(circle at 50% 42%,rgba(24,105,205,.24),transparent 44%),
+        linear-gradient(180deg,#0d3b78 0%,#092f63 46%,#061b3b 100%);
+    }
+    button,input,select{font:inherit} button{border:0;cursor:pointer}
+    .app{width:min(1120px,100%);margin:0 auto;padding:16px 13px 28px}
+    .hero{position:relative;z-index:1;margin:-16px -13px 14px;padding:13px 13px 8px;background:linear-gradient(180deg,rgba(10,48,99,.74),rgba(10,48,99,.18));border-bottom:1px solid rgba(245,200,75,.12)}
+    .titleImage{
+      width:100%;
+      aspect-ratio:16/9;
+      border-radius:26px;
+      margin:0;
+      background:
+        url("https://i.postimg.cc/L8WCchbC/Tippspiel-2026-WDR-Dortmund.png") center/contain no-repeat,
+        radial-gradient(circle at 30% 12%,rgba(245,200,75,.12),transparent 36%),
+        linear-gradient(135deg,rgba(10,48,99,.96),rgba(13,68,135,.70));
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:0 18px 48px rgba(0,0,0,.34), inset 0 0 0 1px rgba(255,255,255,.05);
+      position:relative;
+      overflow:hidden;
+    }
+    .brand{display:flex;align-items:center;gap:12px}.logo{width:50px;height:50px;border-radius:17px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#130712;font-weight:950;letter-spacing:-.08em;box-shadow:var(--shadow)}
+    h1{font-size:clamp(25px,7vw,42px);line-height:.96;margin:0;letter-spacing:-.055em}.sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.chip{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.06);color:var(--muted);font-size:12px}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--warn)}.dot.ok{background:var(--ok)}.dot.bad{background:var(--danger)}
+    .tabs{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:9px 9px calc(9px + var(--safe));background:rgba(6,27,59,.90);backdrop-filter:blur(20px);border-top:1px solid rgba(245,200,75,.16)}
+    .tab{min-height:48px;position:relative;z-index:10000;touch-action:manipulation;border-radius:16px;background:rgba(255,255,255,.07);color:var(--muted);font-weight:850;font-size:12px}.tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06142b;box-shadow:0 10px 28px rgba(244,196,78,.24)}
+    .grid{display:grid;gap:12px}.card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.065));border-radius:var(--r);box-shadow:var(--shadow);padding:14px;overflow:hidden}.card.soft{box-shadow:none}
+    h2{font-size:20px;letter-spacing:-.035em;margin:0 0 10px} h3{font-size:16px;margin:0 0 8px}.muted{color:var(--muted)}.small{font-size:13px}.tiny{font-size:12px}.hidden{display:none!important}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    .field{display:grid;gap:6px;margin:10px 0} label{font-size:13px;color:var(--muted)}
+    input,select{width:100%;border:1px solid var(--line);border-radius:16px;color:var(--text);background:rgba(0,0,0,.22);padding:13px;outline:none}
+    input:focus,select:focus{border-color:rgba(244,196,78,.78);box-shadow:0 0 0 3px rgba(244,196,78,.14)}
+    .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.btn{border-radius:16px;padding:12px 14px;font-weight:900;background:rgba(255,255,255,.11);color:var(--text);border:1px solid var(--line)}.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06142b;border-color:transparent}.btn.danger{background:rgba(255,97,112,.14);border-color:rgba(255,97,112,.38);color:#ffd7db}.btn:disabled{opacity:.45;cursor:not-allowed}
+    .split{display:grid;gap:12px}@media(min-width:820px){.split{grid-template-columns:1fr 1fr}.widegrid{grid-template-columns:1.15fr .85fr}}
+    .match{display:grid;gap:10px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,rgba(245,200,75,.10),rgba(255,255,255,.055),rgba(20,91,177,.24));padding:12px}.match-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.title{font-weight:950;letter-spacing:-.02em}.meta{margin-top:3px;color:var(--muted);font-size:12px}
+    .scorebox{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center}.team{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.team.r{text-align:right}.goals{display:grid;grid-template-columns:50px 12px 50px;gap:5px;align-items:center}.goals input{text-align:center;padding:10px 4px;border-radius:14px;font-weight:950}.tipinput{display:flex;justify-content:center;margin-top:2px}.tipinput .goals{grid-template-columns:62px 18px 62px}.tipinput .goals input{font-size:18px;padding:12px 4px}.trendbox{border:1px solid rgba(255,215,96,.18);background:rgba(255,255,255,.055);border-radius:16px;padding:9px 10px}.trendline{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.trenditem{display:inline-flex;gap:5px;align-items:center;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);padding:4px 8px;font-size:12px;color:var(--muted)}.trenditem b{color:var(--text)}
+    table{width:100%;border-collapse:collapse}th,td{padding:10px 7px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;text-align:left}th{color:var(--muted);font-weight:850}.num{text-align:right;font-variant-numeric:tabular-nums}tr.me td{background:rgba(32,230,184,.08)}
+    .ok{color:#b8ffd8}.warn{color:#ffe4a3}.danger{color:#ffd4d9}.badge{display:inline-flex;border-radius:999px;border:1px solid var(--line);padding:4px 8px;background:rgba(255,255,255,.06);font-size:12px;color:var(--muted)} .flag{font-size:1.1em;line-height:1;display:inline-block;vertical-align:-0.08em;margin-right:6px}.teamwrap{display:inline-flex;align-items:center;min-width:0}.pairsep{opacity:.7;margin:0 5px}
+    .toast{position:fixed;z-index:80;left:12px;right:12px;bottom:calc(78px + var(--safe));background:rgba(10,22,38,.97);border:1px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:var(--shadow);transform:translateY(150%);opacity:0;transition:.25s ease}.toast.show{transform:translateY(0);opacity:1}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div class="titleImage" aria-label="WM-Tippspiel 2026 WDR Dortmund Titelbild"></div>
+    <div class="chips">
+      <span class="chip"><span id="fbDot" class="dot"></span><span id="fbText">Firebase verbindet…</span></span>
+      <span class="chip"><span id="dataDot" class="dot"></span><span id="dataText">Spielplan lädt…</span></span>
+      <span class="chip" id="playerChip">nicht angemeldet</span>
+      <span class="chip" id="matchChip">0 Spiele</span>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section id="errorCard" class="card hidden" style="border-color:rgba(255,97,112,.45);background:rgba(255,97,112,.10)">
+      <h2>App-Hinweis</h2>
+      <p id="errorText" class="small danger"></p>
+    </section>
+    <section id="loginCard" class="card">
+      <h2>Mitspielen</h2>
+      <p class="muted small">Name + persönliche Tipp-PIN. Mit derselben PIN kannst du später deine Tipps weiter bearbeiten.</p>
+      <div class="split">
+        <div class="field"><label for="playerName">Name</label><input id="playerName" autocomplete="name" placeholder="z. B. Christian"></div>
+        <div class="field"><label for="playerPin">Persönliche Tipp-PIN</label><input id="playerPin" type="password" inputmode="numeric" maxlength="8" placeholder="z. B. 1234"></div>
+      </div>
+      <div class="btnrow"><button class="btn primary" id="loginBtn">Einloggen / registrieren</button><button class="btn" id="logoutBtn">Abmelden</button></div>
+      <p class="muted tiny">Datenschutz-Hinweis: Die App speichert Namen, PIN-Hash und Tipps in Firebase. Die PIN selbst wird nicht gespeichert.</p>
+    </section>
+
+    <section id="view-tips" class="grid hidden">
+      <div class="card soft">
+        <h2>Meine Tipps</h2>
+        <div class="split">
+          <div class="field"><label>Runde</label><select id="roundFilter"><option value="all">Alle Spiele</option><option value="group">Gruppenphase</option><option value="r32">Sechzehntelfinale</option><option value="r16">Achtelfinale</option><option value="qf">Viertelfinale</option><option value="sf">Halbfinale</option><option value="third">Spiel um Platz 3</option><option value="final">Finale</option></select></div>
+          <div class="field"><label>Anzeige</label><select id="timeFilter"><option value="open">Offene Tipps zuerst</option><option value="all">Alle Spiele</option><option value="played">Nur gespielte Spiele</option></select></div>
+        </div>
+        <p class="muted tiny">Wertung: 3 Punkte exaktes Ergebnis, 2 richtige Tordifferenz, 1 richtiger Sieger/Tendenz.</p>
+      </div>
+      <div id="tipsList" class="grid"></div>
+    </section>
+
+    <section id="view-table" class="card hidden">
+      <h2>Tabelle</h2>
+      <div id="rankingBox"></div>
+    </section>
+
+    <section id="view-schedule" class="grid hidden">
+      <div class="card">
+        <h2>Spielplan & echte Ergebnisse</h2>
+        <p class="muted small">Die App lädt den WM-Spielplan automatisch aus <span class="mono">openfootball/worldcup.json</span>. Wenn dort Ergebnisse ergänzt werden, übernimmt die App sie beim nächsten Sync.</p>
+        <div class="btnrow"><button class="btn primary" id="syncBtn">Jetzt aktualisieren</button><button class="btn" id="clearCacheBtn">Spielplan-Cache leeren</button></div>
+      </div>
+      <div id="scheduleList" class="grid"></div>
+    </section>
+
+    <section id="view-groups" class="grid hidden">
+      <div class="card">
+        <h2>Gruppen & K.-o.-Logik</h2>
+        <p class="muted small">Gruppentabellen werden aus den geladenen echten Ergebnissen berechnet. K.-o.-Paarungen mit Platzhaltern wie W97 oder 1A werden soweit möglich automatisch aufgelöst.</p>
+      </div>
+      <div id="groupsBox" class="grid"></div>
+    </section>
+
+    <section id="view-admin" class="grid hidden">
+      <div class="card">
+        <h2>Admin</h2>
+        <p class="muted small">Für den Notfall kannst du Ergebnisse manuell überschreiben, falls die offene Datenquelle hinterherhinkt. Admin-PIN: im Code fest eingebaut.</p>
+        <div class="split">
+          <div class="field"><label>Admin-PIN</label><input id="adminPin" type="password" inputmode="numeric" placeholder="Admin-PIN"></div>
+          <div class="field"><label>&nbsp;</label><button class="btn primary" id="adminLoginBtn">Admin freischalten</button></div>
+        </div>
+      </div>
+      <div id="adminTools" class="grid hidden">
+        <div class="card">
+          <h2>Manuelle Ergebnis-Overrides</h2>
+          <p class="muted small">Leere Felder entfernen den Override wieder. Die Originaldaten aus dem Netz bleiben unberührt.</p>
+          <div id="overrideList" class="grid"></div>
+        </div>
+
+        <div class="card">
+          <h2>Alle abgegebenen Tipps</h2>
+          <p class="muted small">Nur für Admins sichtbar. Sortiert nach Spiel; mit Name, Tipp, Ergebnis und Punkten.</p>
+          <div class="split">
+            <div class="field">
+              <label for="adminTipsRoundFilter">Runde</label>
+              <select id="adminTipsRoundFilter">
+                <option value="all">Alle Spiele</option>
+                <option value="group">Gruppenphase</option>
+                <option value="r32">Sechzehntelfinale</option>
+                <option value="r16">Achtelfinale</option>
+                <option value="qf">Viertelfinale</option>
+                <option value="sf">Halbfinale</option>
+                <option value="third">Spiel um Platz 3</option>
+                <option value="final">Finale</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="adminTipsPlayerFilter">Person</label>
+              <select id="adminTipsPlayerFilter">
+                <option value="all">Alle Personen</option>
+              </select>
+            </div>
+          </div>
+          <div class="btnrow">
+            <button class="btn" id="exportTipsCsvBtn">Tipps als CSV herunterladen</button>
+          </div>
+          <div id="adminAllTipsBox" class="grid"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<nav class="tabs">
+  <button type="button" class="tab active" data-tab="tips">Tipps</button>
+  <button type="button" class="tab" data-tab="table">Tabelle</button>
+  <button type="button" class="tab" data-tab="schedule">Plan</button>
+  <button type="button" class="tab" data-tab="groups">Gruppen</button>
+  <button type="button" class="tab" data-tab="admin">Admin</button>
+</nav>
+<div id="toast" class="toast"></div>
+
+<script type="module">
+const GAME_ID = "wm2026-buero-tippspiel-v2";
+const ADMIN_PIN = "2606";
+const APP_VERSION = "v12-tip-trends";
+const SOURCE_URL = "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json";
+
+// Firebase-Daten aus deiner ESC-App / demselben kostenlosen Projekt.
+// Die App nutzt einen eigenen Pfad GAME_ID und vermischt sich nicht mit dem ESC-Voting.
+const firebaseConfig = {
+  apiKey: "AIzaSyBoER2XZsX5D2tcVxBuxlUZ9xODOw_RJYw",
+  authDomain: "esc-2026-32bc5.firebaseapp.com",
+  projectId: "esc-2026-32bc5"
+};
+const DATABASE_CANDIDATES = [
+  "https://esc-2026-32bc5-default-rtdb.europe-west1.firebasedatabase.app",
+  "https://esc-2026-32bc5-default-rtdb.firebaseio.com"
+];
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, update, remove, get, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+const $ = id => document.getElementById(id);
+const roundMap = {
+  "Matchday":"group","Round of 32":"r32","Round of 16":"r16","Quarter-final":"qf","Semi-final":"sf","Match for third place":"third","Final":"final"
+};
+const roundLabel = {group:"Gruppenphase",r32:"Sechzehntelfinale",r16:"Achtelfinale",qf:"Viertelfinale",sf:"Halbfinale",third:"Spiel um Platz 3",final:"Finale"};
+let app, db, base;
+const state = {
+  player: JSON.parse(localStorage.getItem("wm26Player") || "null"),
+  admin: localStorage.getItem("wm26Admin") === "1",
+  matches: JSON.parse(localStorage.getItem("wm26Matches") || "[]"),
+  rawUpdated: localStorage.getItem("wm26RawUpdated") || "",
+  players:{}, tips:{}, overrides:{},
+  activeTab:"tips", roundFilter:"all", timeFilter:"open", adminTipsRoundFilter:"all", adminTipsPlayerFilter:"all", firebaseOK:false, dataOK:false
+};
+
+function toast(msg){ const el=$("toast"); el.textContent=msg; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),2800); }
+function esc(v){return String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]));}
+function slug(s){return String(s||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,48);}
+async function sha256(text){const data=new TextEncoder().encode(text); const hash=await crypto.subtle.digest("SHA-256",data); return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,"0")).join("");}
+function fmtDate(iso){try{return new Intl.DateTimeFormat("de-DE",{weekday:"short",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}).format(new Date(iso));}catch{return iso||""}}
+function now(){return Date.now();}
+
+function isPlaceholder(t){return /^(W|L)?\d{1,3}$|^[123][A-L](\/[A-L])*$/.test(String(t||""));}
+function normTeam(name){
+  return String(name||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+}
+const TEAM_META = {
+  "argentina": {de:"Argentinien", flag:"🇦🇷"},
+  "australia": {de:"Australien", flag:"🇦🇺"},
+  "austria": {de:"Österreich", flag:"🇦🇹"},
+  "belgium": {de:"Belgien", flag:"🇧🇪"},
+  "bolivia": {de:"Bolivien", flag:"🇧🇴"},
+  "bosnia and herzegovina": {de:"Bosnien und Herzegowina", flag:"🇧🇦"},
+  "bosnia herzegovina": {de:"Bosnien und Herzegowina", flag:"🇧🇦"},
+  "brazil": {de:"Brasilien", flag:"🇧🇷"},
+  "bulgaria": {de:"Bulgarien", flag:"🇧🇬"},
+  "cameroon": {de:"Kamerun", flag:"🇨🇲"},
+  "canada": {de:"Kanada", flag:"🇨🇦"},
+  "cape verde": {de:"Kap Verde", flag:"🇨🇻"},
+  "cabo verde": {de:"Kap Verde", flag:"🇨🇻"},
+  "chile": {de:"Chile", flag:"🇨🇱"},
+  "china": {de:"China", flag:"🇨🇳"},
+  "china pr": {de:"China", flag:"🇨🇳"},
+  "colombia": {de:"Kolumbien", flag:"🇨🇴"},
+  "costa rica": {de:"Costa Rica", flag:"🇨🇷"},
+  "croatia": {de:"Kroatien", flag:"🇭🇷"},
+  "curacao": {de:"Curaçao", flag:"🇨🇼"},
+  "cyprus": {de:"Zypern", flag:"🇨🇾"},
+  "czech republic": {de:"Tschechien", flag:"🇨🇿"},
+  "czechia": {de:"Tschechien", flag:"🇨🇿"},
+  "denmark": {de:"Dänemark", flag:"🇩🇰"},
+  "dr congo": {de:"DR Kongo", flag:"🇨🇩"},
+  "democratic republic of the congo": {de:"DR Kongo", flag:"🇨🇩"},
+  "dominican republic": {de:"Dominikanische Republik", flag:"🇩🇴"},
+  "ecuador": {de:"Ecuador", flag:"🇪🇨"},
+  "egypt": {de:"Ägypten", flag:"🇪🇬"},
+  "england": {de:"England", flag:"🏴"},
+  "equatorial guinea": {de:"Äquatorialguinea", flag:"🇬🇶"},
+  "estonia": {de:"Estland", flag:"🇪🇪"},
+  "faroe islands": {de:"Färöer", flag:"🇫🇴"},
+  "finland": {de:"Finnland", flag:"🇫🇮"},
+  "france": {de:"Frankreich", flag:"🇫🇷"},
+  "gabon": {de:"Gabun", flag:"🇬🇦"},
+  "georgia": {de:"Georgien", flag:"🇬🇪"},
+  "germany": {de:"Deutschland", flag:"🇩🇪"},
+  "ghana": {de:"Ghana", flag:"🇬🇭"},
+  "greece": {de:"Griechenland", flag:"🇬🇷"},
+  "guatemala": {de:"Guatemala", flag:"🇬🇹"},
+  "guinea": {de:"Guinea", flag:"🇬🇳"},
+  "guinea bissau": {de:"Guinea-Bissau", flag:"🇬🇼"},
+  "haiti": {de:"Haiti", flag:"🇭🇹"},
+  "honduras": {de:"Honduras", flag:"🇭🇳"},
+  "hungary": {de:"Ungarn", flag:"🇭🇺"},
+  "iceland": {de:"Island", flag:"🇮🇸"},
+  "india": {de:"Indien", flag:"🇮🇳"},
+  "iran": {de:"Iran", flag:"🇮🇷"},
+  "ir iran": {de:"Iran", flag:"🇮🇷"},
+  "iraq": {de:"Irak", flag:"🇮🇶"},
+  "ireland": {de:"Irland", flag:"🇮🇪"},
+  "israel": {de:"Israel", flag:"🇮🇱"},
+  "italy": {de:"Italien", flag:"🇮🇹"},
+  "ivory coast": {de:"Elfenbeinküste", flag:"🇨🇮"},
+  "cote d ivoire": {de:"Elfenbeinküste", flag:"🇨🇮"},
+  "cote d'ivoire": {de:"Elfenbeinküste", flag:"🇨🇮"},
+  "jamaica": {de:"Jamaika", flag:"🇯🇲"},
+  "japan": {de:"Japan", flag:"🇯🇵"},
+  "jordan": {de:"Jordanien", flag:"🇯🇴"},
+  "kenya": {de:"Kenia", flag:"🇰🇪"},
+  "korea republic": {de:"Südkorea", flag:"🇰🇷"},
+  "south korea": {de:"Südkorea", flag:"🇰🇷"},
+  "kosovo": {de:"Kosovo", flag:"🇽🇰"},
+  "latvia": {de:"Lettland", flag:"🇱🇻"},
+  "lithuania": {de:"Litauen", flag:"🇱🇹"},
+  "luxembourg": {de:"Luxemburg", flag:"🇱🇺"},
+  "mali": {de:"Mali", flag:"🇲🇱"},
+  "malta": {de:"Malta", flag:"🇲🇹"},
+  "mexico": {de:"Mexiko", flag:"🇲🇽"},
+  "moldova": {de:"Moldau", flag:"🇲🇩"},
+  "montenegro": {de:"Montenegro", flag:"🇲🇪"},
+  "morocco": {de:"Marokko", flag:"🇲🇦"},
+  "namibia": {de:"Namibia", flag:"🇳🇦"},
+  "netherlands": {de:"Niederlande", flag:"🇳🇱"},
+  "new zealand": {de:"Neuseeland", flag:"🇳🇿"},
+  "nigeria": {de:"Nigeria", flag:"🇳🇬"},
+  "north macedonia": {de:"Nordmazedonien", flag:"🇲🇰"},
+  "northern ireland": {de:"Nordirland", flag:"🇬🇧"},
+  "norway": {de:"Norwegen", flag:"🇳🇴"},
+  "oman": {de:"Oman", flag:"🇴🇲"},
+  "panama": {de:"Panama", flag:"🇵🇦"},
+  "paraguay": {de:"Paraguay", flag:"🇵🇾"},
+  "peru": {de:"Peru", flag:"🇵🇪"},
+  "poland": {de:"Polen", flag:"🇵🇱"},
+  "portugal": {de:"Portugal", flag:"🇵🇹"},
+  "qatar": {de:"Katar", flag:"🇶🇦"},
+  "republic of ireland": {de:"Irland", flag:"🇮🇪"},
+  "romania": {de:"Rumänien", flag:"🇷🇴"},
+  "saudi arabia": {de:"Saudi-Arabien", flag:"🇸🇦"},
+  "scotland": {de:"Schottland", flag:"🏴"},
+  "senegal": {de:"Senegal", flag:"🇸🇳"},
+  "serbia": {de:"Serbien", flag:"🇷🇸"},
+  "slovakia": {de:"Slowakei", flag:"🇸🇰"},
+  "slovenia": {de:"Slowenien", flag:"🇸🇮"},
+  "south africa": {de:"Südafrika", flag:"🇿🇦"},
+  "spain": {de:"Spanien", flag:"🇪🇸"},
+  "suriname": {de:"Suriname", flag:"🇸🇷"},
+  "sweden": {de:"Schweden", flag:"🇸🇪"},
+  "switzerland": {de:"Schweiz", flag:"🇨🇭"},
+  "syria": {de:"Syrien", flag:"🇸🇾"},
+  "tanzania": {de:"Tansania", flag:"🇹🇿"},
+  "trinidad and tobago": {de:"Trinidad und Tobago", flag:"🇹🇹"},
+  "tunisia": {de:"Tunesien", flag:"🇹🇳"},
+  "turkey": {de:"Türkei", flag:"🇹🇷"},
+  "turkiye": {de:"Türkei", flag:"🇹🇷"},
+  "u s a": {de:"Vereinigte Staaten", flag:"🇺🇸"},
+  "usa": {de:"Vereinigte Staaten", flag:"🇺🇸"},
+  "united states": {de:"Vereinigte Staaten", flag:"🇺🇸"},
+  "united states of america": {de:"Vereinigte Staaten", flag:"🇺🇸"},
+  "ukraine": {de:"Ukraine", flag:"🇺🇦"},
+  "united arab emirates": {de:"Vereinigte Arabische Emirate", flag:"🇦🇪"},
+  "uruguay": {de:"Uruguay", flag:"🇺🇾"},
+  "uzbekistan": {de:"Usbekistan", flag:"🇺🇿"},
+  "venezuela": {de:"Venezuela", flag:"🇻🇪"},
+  "wales": {de:"Wales", flag:"🏴"},
+  "zambia": {de:"Sambia", flag:"🇿🇲"},
+  "zimbabwe": {de:"Simbabwe", flag:"🇿🇼"}
+};
+function getTeamMeta(name){
+  if(isPlaceholder(name)) return {de:String(name||""), flag:""};
+  const key = normTeam(name);
+  return TEAM_META[key] || {de:String(name||""), flag:""};
+}
+function teamText(name){
+  return getTeamMeta(name).de;
+}
+function teamHtml(name){
+  const meta = getTeamMeta(name);
+  const flag = meta.flag ? `<span class="flag" aria-hidden="true">${meta.flag}</span>` : "";
+  return `<span class="teamwrap">${flag}<span>${esc(meta.de)}</span></span>`;
+}
+function pairHtml(a,b){
+  return `${teamHtml(a)}<span class="pairsep">–</span>${teamHtml(b)}`;
+}
+function displayGroupLabel(groupOrGround){
+  const raw = String(groupOrGround || "");
+  return esc(raw.replace(/^Group\s+/i, "Gruppe "));
+}
+
+
+function parseKickoff(date, time){
+  if(!date) return "";
+  const m = String(time||"00:00").match(/(\d{1,2}):(\d{2})(?:\s*UTC([+-]\d{1,2}))?/i);
+  if(!m) return date + "T00:00:00Z";
+  const hh=m[1].padStart(2,"0"), mm=m[2], off=m[3] ? `${Number(m[3])>=0?"+":"-"}${String(Math.abs(Number(m[3]))).padStart(2,"0")}:00` : "Z";
+  return `${date}T${hh}:${mm}:00${off}`;
+}
+function normalizeMatch(m, idx){
+  const r = String(m.round||"");
+  const type = r.startsWith("Matchday") ? "group" : (roundMap[r] || "group");
+  const num = m.num || (idx+1);
+  const score = m.score?.ft || null;
+  return {
+    id: String(num),
+    num,
+    round:type,
+    roundText:r,
+    group:m.group || "",
+    teamA:m.team1 || "Team A",
+    teamB:m.team2 || "Team B",
+    originalTeamA:m.team1 || "Team A",
+    originalTeamB:m.team2 || "Team B",
+    ground:m.ground || "",
+    kickoff:parseKickoff(m.date,m.time),
+    resultA: score ? score[0] : "",
+    resultB: score ? score[1] : "",
+    source:"openfootball"
+  };
+}
+async function syncWorldCupData(silent=false){
+  try{
+    const res = await fetch(SOURCE_URL + "?t=" + Date.now(), {cache:"no-store"});
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    const matches = (data.matches || []).map(normalizeMatch);
+    state.matches = matches;
+    state.rawUpdated = new Date().toISOString();
+    localStorage.setItem("wm26Matches", JSON.stringify(matches));
+    localStorage.setItem("wm26RawUpdated", state.rawUpdated);
+    state.dataOK = true;
+    if(!silent) toast(`${matches.length} Spiele aktualisiert`);
+    render();
+  } catch(e){
+    console.error(e);
+    state.dataOK = state.matches.length > 0;
+    if(!silent) toast("Spielplan konnte nicht geladen werden – Cache wird genutzt.");
+    render();
+  }
+}
+
+function applyOverridesAndResolve(){
+  const baseMatches = state.matches.map(m => ({...m}));
+  for(const m of baseMatches){
+    const o = state.overrides[m.id];
+    if(o){
+      if(o.resultA !== undefined) m.resultA = o.resultA;
+      if(o.resultB !== undefined) m.resultB = o.resultB;
+    }
+  }
+  const groupTables = computeGroupTables(baseMatches);
+  const resolved = {};
+  const usedThirdGroups = new Set();
+
+  function groupSlot(code){
+    const pos = Number(code[0]), g = "Group " + code[1];
+    const row = groupTables[g]?.[pos-1];
+    return row?.team || code;
+  }
+  function winnerLoser(code){
+    const kind = code[0], id = code.slice(1);
+    const pm = resolved[id] || baseMatches.find(x=>String(x.num)===id || x.id===id);
+    if(!pm || !hasResult(pm)) return code;
+    const a=Number(pm.resultA), b=Number(pm.resultB);
+    if(a===b) return code; // Elfmeterschießen ist in freier Quelle ggf. nicht enthalten.
+    return kind==="W" ? (a>b?pm.teamA:pm.teamB) : (a>b?pm.teamB:pm.teamA);
+  }
+  function resolveThird(code){
+    const allowed = code.slice(1).split("/");
+    const thirds = bestThirds(groupTables).map(x=>x.groupLetter);
+    const candidates = allowed.filter(g => thirds.includes(g) && !usedThirdGroups.has(g));
+    const pick = candidates[0];
+    if(pick){ usedThirdGroups.add(pick); return groupSlot("3"+pick); }
+    return code;
+  }
+  function resolveTeam(t){
+    t = String(t||"");
+    if(/^[12][A-L]$/.test(t)) return groupSlot(t);
+    if(/^3[A-L](\/[A-L])+$/.test(t)) return resolveThird(t);
+    if(/^[WL]\d{1,3}$/.test(t)) return winnerLoser(t);
+    return t;
+  }
+  for(const m of baseMatches){
+    m.teamA = resolveTeam(m.originalTeamA);
+    m.teamB = resolveTeam(m.originalTeamB);
+    resolved[String(m.num)] = m;
+  }
+  return {matches:baseMatches, groupTables};
+}
+function hasResult(m){return m.resultA!=="" && m.resultB!=="" && m.resultA!==undefined && m.resultB!==undefined && !Number.isNaN(Number(m.resultA)) && !Number.isNaN(Number(m.resultB));}
+function matchLocked(m){return now() >= new Date(m.kickoff).getTime();}
+function winnerSign(a,b){return Math.sign(Number(a)-Number(b));}
+function tipPoints(tip,m){
+  if(!tip || tip.a==="" || tip.b==="" || !hasResult(m)) return 0;
+  const ta=Number(tip.a),tb=Number(tip.b),ra=Number(m.resultA),rb=Number(m.resultB);
+  if([ta,tb,ra,rb].some(Number.isNaN)) return 0;
+  if(ta===ra && tb===rb) return 3;
+  if(winnerSign(ta,tb)===winnerSign(ra,rb) && (ta-tb)===(ra-rb)) return 2;
+  if(winnerSign(ta,tb)===winnerSign(ra,rb)) return 1;
+  return 0;
+}
+function sortedMatches(){
+  const {matches}=applyOverridesAndResolve();
+  return matches.sort((a,b)=>new Date(a.kickoff)-new Date(b.kickoff));
+}
+function groupLetter(g){return String(g||"").replace("Group ","");}
+function computeGroupTables(matches){
+  const tables = {};
+  for(const m of matches.filter(x=>x.round==="group" && x.group)){
+    for(const t of [m.teamA,m.teamB]){
+      tables[m.group] ||= {};
+      tables[m.group][t] ||= {team:t,group:m.group,groupLetter:groupLetter(m.group),p:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0};
+    }
+    if(hasResult(m)){
+      const A=tables[m.group][m.teamA], B=tables[m.group][m.teamB], a=Number(m.resultA), b=Number(m.resultB);
+      A.p++;B.p++;A.gf+=a;A.ga+=b;B.gf+=b;B.ga+=a;A.gd=A.gf-A.ga;B.gd=B.gf-B.ga;
+      if(a>b){A.w++;B.l++;A.pts+=3}else if(a<b){B.w++;A.l++;B.pts+=3}else{A.d++;B.d++;A.pts++;B.pts++}
+    }
+  }
+  const out={};
+  for(const [g, obj] of Object.entries(tables)){
+    out[g]=Object.values(obj).sort((a,b)=>b.pts-a.pts || b.gd-a.gd || b.gf-a.gf || a.team.localeCompare(b.team));
+  }
+  return out;
+}
+function bestThirds(tables){
+  return Object.values(tables).map(rows=>rows[2]).filter(Boolean).sort((a,b)=>b.pts-a.pts || b.gd-a.gd || b.gf-a.gf || a.team.localeCompare(b.team)).slice(0,8);
+}
+
+async function initFirebase(){
+  for(const url of DATABASE_CANDIDATES){
+    try{
+      app = initializeApp({...firebaseConfig, databaseURL:url});
+      db = getDatabase(app, url);
+      base = `wmtippspiel/${GAME_ID}`;
+      onValue(ref(db, ".info/connected"), snap=>{
+        state.firebaseOK=!!snap.val();
+        $("fbDot").className="dot "+(state.firebaseOK?"ok":"bad");
+        $("fbText").textContent=state.firebaseOK?"Firebase online":"Firebase offline";
+      });
+      onValue(ref(db, `${base}/players`), snap=>{state.players=snap.val()||{}; render();});
+      onValue(ref(db, `${base}/tips`), snap=>{state.tips=snap.val()||{}; render();});
+      onValue(ref(db, `${base}/overrides`), snap=>{state.overrides=snap.val()||{}; render();});
+      return;
+    }catch(e){ console.warn("Firebase candidate failed", url, e); }
+  }
+  $("fbDot").className="dot bad"; $("fbText").textContent="Firebase nicht erreichbar";
+}
+
+async function login(){
+  if(!db){toast("Firebase ist noch nicht bereit.");return}
+  const name=$("playerName").value.trim(), pin=$("playerPin").value.trim();
+  if(!name || !pin){toast("Bitte Name und PIN eintragen.");return}
+  const id=slug(name), pinHash=await sha256(`${id}:${pin}:wm26`);
+  const pr=ref(db,`${base}/players/${id}`); const snap=await get(pr);
+  if(snap.exists() && snap.val().pinHash!==pinHash){toast("Diese PIN passt nicht zu diesem Namen.");return}
+  await update(pr,{id,name,pinHash,updatedAt:serverTimestamp(),createdAt:snap.val()?.createdAt||serverTimestamp()});
+  state.player={id,name}; localStorage.setItem("wm26Player",JSON.stringify(state.player));
+  toast("Du bist angemeldet."); render();
+}
+function logout(){localStorage.removeItem("wm26Player");state.player=null;render();}
+async function saveTip(id){
+  if(!state.player||!db)return;
+  const m=sortedMatches().find(x=>x.id===id);
+  if(!m || matchLocked(m)){toast("Dieses Spiel ist gesperrt.");render();return}
+  const a=document.querySelector(`[data-tip-a="${id}"]`).value.trim();
+  const b=document.querySelector(`[data-tip-b="${id}"]`).value.trim();
+  if((a&&!/^\d+$/.test(a))||(b&&!/^\d+$/.test(b))){toast("Bitte nur ganze Zahlen eintragen.");return}
+  await set(ref(db,`${base}/tips/${id}/${state.player.id}`),{a,b,updatedAt:serverTimestamp()});
+  toast("Tipp gespeichert");
+}
+async function saveOverride(id){
+  if(!state.admin||!db)return;
+  const a=document.querySelector(`[data-ov-a="${id}"]`).value.trim();
+  const b=document.querySelector(`[data-ov-b="${id}"]`).value.trim();
+  if((a&&!/^\d+$/.test(a))||(b&&!/^\d+$/.test(b))){toast("Bitte nur ganze Zahlen eintragen.");return}
+  if(a==="" && b==="") await remove(ref(db,`${base}/overrides/${id}`));
+  else await set(ref(db,`${base}/overrides/${id}`),{resultA:a,resultB:b,updatedAt:serverTimestamp()});
+  toast("Override gespeichert");
+}
+
+function showError(msg){
+  const card = $("errorCard"), text = $("errorText");
+  if(card && text){ text.textContent = msg; card.classList.remove("hidden"); }
+  console.error(msg);
+}
+function clearError(){
+  const card = $("errorCard");
+  if(card) card.classList.add("hidden");
+}
+function render(){
+  try{
+    clearError();
+
+    if($("playerChip")) $("playerChip").textContent = state.player ? `angemeldet: ${state.player.name}` : "nicht angemeldet";
+    if($("matchChip")) $("matchChip").textContent = `${state.matches.length} Spiele`;
+    if($("dataDot")) $("dataDot").className = "dot " + (state.dataOK ? "ok" : "bad");
+    if($("dataText")) $("dataText").textContent = state.dataOK ? `Spielplan OK${state.rawUpdated ? " · " + fmtDate(state.rawUpdated) : ""}` : "Spielplan fehlt";
+
+    if($("loginCard")) $("loginCard").classList.toggle("hidden", !!state.player && state.activeTab !== "admin");
+    if($("view-tips")) $("view-tips").classList.toggle("hidden", state.activeTab !== "tips" || !state.player);
+    if($("view-table")) $("view-table").classList.toggle("hidden", state.activeTab !== "table");
+    if($("view-schedule")) $("view-schedule").classList.toggle("hidden", state.activeTab !== "schedule");
+    if($("view-groups")) $("view-groups").classList.toggle("hidden", state.activeTab !== "groups");
+    if($("view-admin")) $("view-admin").classList.toggle("hidden", state.activeTab !== "admin");
+    if($("adminTools")) $("adminTools").classList.toggle("hidden", !state.admin);
+
+    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x.dataset.tab === state.activeTab));
+
+    renderTips();
+    renderRanking();
+    renderSchedule();
+    renderGroups();
+    if(state.activeTab === "admin") { renderOverrides(); renderAdminAllTips(); }
+  } catch(e) {
+    showError("Die Oberfläche konnte nicht vollständig aktualisiert werden: " + (e && e.message ? e.message : e));
+  }
+}
+
+
+function getTrend(match){
+  const tipsForMatch = state.tips?.[match.id] || {};
+  const valid = Object.values(tipsForMatch).filter(t => t && t.a !== "" && t.b !== "" && t.a !== undefined && t.b !== undefined && !Number.isNaN(Number(t.a)) && !Number.isNaN(Number(t.b)));
+  const count = valid.length;
+  if(!count) return {count:0};
+
+  let home = 0, draw = 0, away = 0, sumA = 0, sumB = 0;
+  const exactCounts = {};
+  for(const t of valid){
+    const a = Number(t.a), b = Number(t.b);
+    sumA += a; sumB += b;
+    if(a > b) home++;
+    else if(a < b) away++;
+    else draw++;
+    const key = `${a}:${b}`;
+    exactCounts[key] = (exactCounts[key] || 0) + 1;
+  }
+
+  const topExact = Object.entries(exactCounts).sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0];
+  const tendencyRows = [
+    {key:"home", label:teamText(match.teamA), count:home},
+    {key:"draw", label:"Remis", count:draw},
+    {key:"away", label:teamText(match.teamB), count:away}
+  ].sort((a,b) => b.count - a.count || a.label.localeCompare(b.label));
+  const topTendency = tendencyRows[0];
+
+  return {
+    count,
+    topExact: topExact ? {score: topExact[0], count: topExact[1]} : null,
+    topTendency,
+    home, draw, away,
+    avgA: sumA / count,
+    avgB: sumB / count
+  };
+}
+function percent(part,total){
+  if(!total) return 0;
+  return Math.round((part / total) * 100);
+}
+function trendHtml(match){
+  const tr = getTrend(match);
+  if(!tr.count){
+    return `<div class="trendbox"><div class="meta">Tipptrend: Noch keine Tipps abgegeben.</div></div>`;
+  }
+  const trendLabel = tr.topTendency?.key === "draw" ? "Remis" : `${esc(tr.topTendency.label)} gewinnt`;
+  const exactLabel = tr.topExact ? `${esc(tr.topExact.score)} (${tr.topExact.count}×)` : "–";
+  const avg = `${tr.avgA.toFixed(1).replace(".", ",")}:${tr.avgB.toFixed(1).replace(".", ",")}`;
+  return `<div class="trendbox">
+    <div class="meta" style="margin-bottom:6px">Tipptrend aus ${tr.count} Tipp${tr.count === 1 ? "" : "s"}</div>
+    <div class="trendline">
+      <span class="trenditem">Tendenz: <b>${trendLabel}</b></span>
+      <span class="trenditem">H ${percent(tr.home,tr.count)}%</span>
+      <span class="trenditem">X ${percent(tr.draw,tr.count)}%</span>
+      <span class="trenditem">A ${percent(tr.away,tr.count)}%</span>
+      <span class="trenditem">häufigster Tipp: <b>${exactLabel}</b></span>
+      <span class="trenditem">Ø <b>${avg}</b></span>
+    </div>
+  </div>`;
+}
+
+function renderTips(){
+  const box=$("tipsList"); if(!state.player)return;
+  let ms=sortedMatches();
+  if(state.roundFilter!=="all") ms=ms.filter(m=>m.round===state.roundFilter);
+  if(state.timeFilter==="played") ms=ms.filter(hasResult);
+  if(state.timeFilter==="open") ms=ms.sort((a,b)=>(matchLocked(a)-matchLocked(b)) || new Date(a.kickoff)-new Date(b.kickoff));
+  if(!ms.length){box.innerHTML=`<div class="card"><p class="muted">Keine Spiele in dieser Ansicht.</p></div>`;return}
+  box.innerHTML=ms.map(m=>{
+    const t=state.tips?.[m.id]?.[state.player.id]||{};
+    const locked=matchLocked(m), pts=tipPoints(t,m);
+    return `<article class="match">
+      <div class="match-head">
+        <div class="title">${pairHtml(m.teamA, m.teamB)}</div>
+        <div>${locked?'<span class="badge warn">gesperrt</span>':'<span class="badge ok">offen</span>'}</div>
+      </div>
+      <div class="meta">${roundLabel[m.round]||m.round} · ${displayGroupLabel(m.group||m.ground||"")} · Spiel ${m.num} · ${fmtDate(m.kickoff)}</div>
+      ${trendHtml(m)}
+      <div class="tipinput">
+        <div class="goals"><input aria-label="Tore ${esc(teamText(m.teamA))}" inputmode="numeric" data-tip-a="${m.id}" value="${esc(t.a??"")}" ${locked?"disabled":""}><span class="muted">:</span><input aria-label="Tore ${esc(teamText(m.teamB))}" inputmode="numeric" data-tip-b="${m.id}" value="${esc(t.b??"")}" ${locked?"disabled":""}></div>
+      </div>
+      <div class="meta">${hasResult(m)?`Ergebnis: <b>${m.resultA}:${m.resultB}</b> · ${pts} Punkt${pts===1?"":"e"}`:(isPlaceholder(m.originalTeamA)||isPlaceholder(m.originalTeamB)?"Paarung wird automatisch aufgelöst, sobald Vorgänger/Gruppen feststehen.":"Noch kein Ergebnis")}</div>
+    </article>`;
+  }).join("");
+  box.querySelectorAll("[data-tip-a],[data-tip-b]").forEach(i=>i.addEventListener("change",()=>saveTip(i.dataset.tipA||i.dataset.tipB)));
+}
+function renderRanking(){
+  const ms=sortedMatches();
+  const effectivePlayers = {...(state.players||{})};
+  if(state.player && !effectivePlayers[state.player.id]) effectivePlayers[state.player.id] = {id:state.player.id, name:state.player.name};
+  const rows=Object.values(effectivePlayers).map(p=>{
+    let points=0, exact=0, diff=0, tend=0, count=0;
+    for(const m of ms){
+      const t=state.tips?.[m.id]?.[p.id]; if(t&&t.a!==""&&t.b!=="") count++;
+      const pts=tipPoints(t,m); points+=pts; if(pts===3) exact++; else if(pts===2) diff++; else if(pts===1) tend++;
+    }
+    return {...p,points,exact,diff,tend,count};
+  }).sort((a,b)=>b.points-a.points || b.exact-a.exact || b.diff-a.diff || b.tend-a.tend || a.name.localeCompare(b.name));
+  $("rankingBox").innerHTML=`<table><thead><tr><th>#</th><th>Name</th><th class="num">Pkt.</th><th class="num">3er</th><th class="num">2er</th><th class="num">1er</th><th class="num">Tipps</th></tr></thead><tbody>${rows.map((r,i)=>`<tr class="${state.player?.id===r.id?"me":""}"><td>${i+1}</td><td>${esc(r.name)}</td><td class="num"><b>${r.points}</b></td><td class="num">${r.exact}</td><td class="num">${r.diff}</td><td class="num">${r.tend}</td><td class="num">${r.count}</td></tr>`).join("")}</tbody></table>`;
+}
+function renderSchedule(){
+  const ms=sortedMatches();
+  $("scheduleList").innerHTML=ms.map(m=>`<article class="match">
+    <div class="match-head"><div><div class="title">${pairHtml(m.teamA, m.teamB)}</div><div class="meta">${roundLabel[m.round]||m.round} · ${displayGroupLabel(m.group||m.ground||"")} · ${fmtDate(m.kickoff)}</div></div><div class="title">${hasResult(m)?`${m.resultA}:${m.resultB}`:"–"}</div></div>
+    ${(m.teamA!==m.originalTeamA||m.teamB!==m.originalTeamB)?`<div class="meta">aus Platzhaltern: ${esc(m.originalTeamA)} – ${esc(m.originalTeamB)}</div>`:""}
+  </article>`).join("");
+}
+function renderGroups(){
+  const {groupTables}=applyOverridesAndResolve();
+  const thirds=bestThirds(groupTables).map(x=>x.team);
+  $("groupsBox").innerHTML=Object.entries(groupTables).sort().map(([g,rows])=>`<div class="card"><h3>${displayGroupLabel(g)}</h3><table><thead><tr><th>#</th><th>Team</th><th class="num">Sp</th><th class="num">TD</th><th class="num">Pkt.</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${i+1}</td><td>${teamHtml(r.team)} ${i<2?'<span class="badge ok">weiter</span>':(i===2&&thirds.includes(r.team)?'<span class="badge warn">3. weiter</span>':'')}</td><td class="num">${r.p}</td><td class="num">${r.gd}</td><td class="num"><b>${r.pts}</b></td></tr>`).join("")}</tbody></table></div>`).join("") || `<div class="card"><p class="muted">Noch keine Gruppen geladen.</p></div>`;
+}
+function renderOverrides(){
+  if(!state.admin || state.activeTab !== "admin") return;
+  const box = $("overrideList");
+  if(!box) return;
+  const ms=sortedMatches().filter(m=>hasResult(m)||matchLocked(m)).slice(0,120);
+  box.innerHTML=ms.map(m=>{
+    const o=state.overrides[m.id]||{};
+    return `<article class="match"><div><div class="title">${pairHtml(m.teamA, m.teamB)}</div><div class="meta">${fmtDate(m.kickoff)} · Quelle: ${hasResult(m)?`${m.resultA}:${m.resultB}`:"kein Ergebnis"}</div></div>
+    <div class="goals"><input inputmode="numeric" data-ov-a="${m.id}" value="${esc(o.resultA??"")}"><span class="muted">:</span><input inputmode="numeric" data-ov-b="${m.id}" value="${esc(o.resultB??"")}"></div>
+    <button class="btn primary" data-save-ov="${m.id}">Override speichern</button></article>`;
+  }).join("") || `<p class="muted">Noch keine gesperrten/gespielten Spiele.</p>`;
+  box.querySelectorAll("[data-save-ov]").forEach(b=>b.addEventListener("click",()=>saveOverride(b.dataset.saveOv)));
+}
+
+function tipDisplay(t){
+  if(!t || t.a === "" || t.b === "" || t.a === undefined || t.b === undefined) return "–";
+  return `${esc(t.a)}:${esc(t.b)}`;
+}
+function resultDisplay(m){
+  return hasResult(m) ? `${m.resultA}:${m.resultB}` : "–";
+}
+function getAdminTipRows(){
+  const players = state.players || {};
+  let ms = sortedMatches();
+  if(state.adminTipsRoundFilter !== "all") ms = ms.filter(m => m.round === state.adminTipsRoundFilter);
+
+  const rows = [];
+  for(const m of ms){
+    const tipsForMatch = state.tips?.[m.id] || {};
+    for(const [playerId, tip] of Object.entries(tipsForMatch)){
+      if(state.adminTipsPlayerFilter !== "all" && playerId !== state.adminTipsPlayerFilter) continue;
+      if(!tip || tip.a === "" || tip.b === "" || tip.a === undefined || tip.b === undefined) continue;
+      const player = players[playerId] || {id: playerId, name: playerId};
+      rows.push({
+        match: m,
+        player,
+        tip,
+        points: tipPoints(tip, m)
+      });
+    }
+  }
+  rows.sort((a,b) => new Date(a.match.kickoff) - new Date(b.match.kickoff) || a.player.name.localeCompare(b.player.name));
+  return rows;
+}
+function syncAdminTipPlayerFilter(){
+  const select = $("adminTipsPlayerFilter");
+  if(!select) return;
+  const current = state.adminTipsPlayerFilter || "all";
+  const players = Object.values(state.players || {}).sort((a,b)=>a.name.localeCompare(b.name));
+  select.innerHTML = `<option value="all">Alle Personen</option>` + players.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("");
+  select.value = players.some(p => p.id === current) ? current : "all";
+  state.adminTipsPlayerFilter = select.value;
+}
+function renderAdminAllTips(){
+  if(!state.admin || state.activeTab !== "admin") return;
+  const box = $("adminAllTipsBox");
+  if(!box) return;
+
+  syncAdminTipPlayerFilter();
+  const rows = getAdminTipRows();
+
+  if(!rows.length){
+    box.innerHTML = `<p class="muted">Noch keine passenden Tipps abgegeben.</p>`;
+    return;
+  }
+
+  const grouped = {};
+  for(const row of rows){
+    grouped[row.match.id] ||= {match: row.match, rows: []};
+    grouped[row.match.id].rows.push(row);
+  }
+
+  box.innerHTML = Object.values(grouped).map(group => {
+    const m = group.match;
+    return `<article class="match">
+      <div class="match-head">
+        <div>
+          <div class="title">${pairHtml(m.teamA, m.teamB)}</div>
+          <div class="meta">${roundLabel[m.round]||m.round} · ${displayGroupLabel(m.group||m.ground||"")} · Spiel ${m.num} · ${fmtDate(m.kickoff)} · Ergebnis: <b>${resultDisplay(m)}</b></div>
+        </div>
+        <div class="badge">${group.rows.length} Tipp${group.rows.length === 1 ? "" : "s"}</div>
+      </div>
+      <table>
+        <thead><tr><th>Name</th><th class="num">Tipp</th><th class="num">Pkt.</th></tr></thead>
+        <tbody>
+          ${group.rows.map(r => `<tr><td>${esc(r.player.name)}</td><td class="num"><b>${tipDisplay(r.tip)}</b></td><td class="num">${r.points}</td></tr>`).join("")}
+        </tbody>
+      </table>
+    </article>`;
+  }).join("");
+}
+function csvEscape(value){
+  const s = String(value ?? "");
+  return /[;"\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+function exportTipsCsv(){
+  if(!state.admin) return;
+  const rows = getAdminTipRows();
+  const header = ["Spiel", "Runde", "Gruppe/Ort", "Anstoß", "Team A", "Team B", "Ergebnis", "Name", "Tipp", "Punkte"];
+  const lines = [header.map(csvEscape).join(";")];
+  for(const r of rows){
+    const m = r.match;
+    lines.push([
+      m.num,
+      roundLabel[m.round] || m.round,
+      (m.group || m.ground || "").replace(/^Group\s+/i, "Gruppe "),
+      fmtDate(m.kickoff),
+      teamText(m.teamA),
+      teamText(m.teamB),
+      resultDisplay(m),
+      r.player.name,
+      `${r.tip.a}:${r.tip.b}`,
+      r.points
+    ].map(csvEscape).join(";"));
+  }
+  const blob = new Blob(["\ufeff" + lines.join("\n")], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `wm-tippspiel-tipps-${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+$("loginBtn").addEventListener("click",login);
+$("logoutBtn").addEventListener("click",logout);
+$("roundFilter").addEventListener("change",e=>{state.roundFilter=e.target.value;renderTips();});
+$("timeFilter").addEventListener("change",e=>{state.timeFilter=e.target.value;renderTips();});
+$("syncBtn").addEventListener("click",()=>syncWorldCupData(false));
+$("clearCacheBtn").addEventListener("click",()=>{localStorage.removeItem("wm26Matches");localStorage.removeItem("wm26RawUpdated");state.matches=[];state.rawUpdated="";render();toast("Cache geleert");syncWorldCupData(true);});
+$("adminLoginBtn").addEventListener("click",()=>{if($("adminPin").value===ADMIN_PIN){state.admin=true;localStorage.setItem("wm26Admin","1");toast("Admin freigeschaltet");render();}else toast("Admin-PIN stimmt nicht.");});
+$("adminTipsRoundFilter")?.addEventListener("change", e => { state.adminTipsRoundFilter = e.target.value; renderAdminAllTips(); });
+$("adminTipsPlayerFilter")?.addEventListener("change", e => { state.adminTipsPlayerFilter = e.target.value; renderAdminAllTips(); });
+$("exportTipsCsvBtn")?.addEventListener("click", exportTipsCsv);
+function goTab(tab){
+  state.activeTab = tab || "tips";
+  render();
+  setTimeout(()=>window.scrollTo({top:0, behavior:"smooth"}), 0);
+}
+const tabsEl = document.querySelector(".tabs");
+tabsEl.addEventListener("pointerdown", (ev)=>{
+  const b = ev.target.closest(".tab");
+  if(!b) return;
+  ev.preventDefault();
+  ev.stopPropagation();
+  goTab(b.dataset.tab);
+}, true);
+tabsEl.addEventListener("click", (ev)=>{
+  const b = ev.target.closest(".tab");
+  if(!b) return;
+  ev.preventDefault();
+  ev.stopPropagation();
+  goTab(b.dataset.tab);
+}, true);
+
+initFirebase();
+syncWorldCupData(true);
+setInterval(()=>syncWorldCupData(true), 30*60*1000);
+render();
+</script>
+</body>
+</html>
