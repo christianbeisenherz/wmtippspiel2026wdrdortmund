@@ -165,6 +165,12 @@
           </div>
           <div id="adminAllTipsBox" class="grid"></div>
         </div>
+
+        <div class="card">
+          <h2>Teilnehmer verwalten</h2>
+          <p class="muted small">Hier kannst du Teilnehmer umbenennen oder löschen. Beim Löschen werden auch alle Tipps dieser Person entfernt.</p>
+          <div id="adminPlayersBox" class="grid"></div>
+        </div>
       </div>
     </section>
   </main>
@@ -217,6 +223,8 @@ const state = {
 
 function toast(msg){ const el=$("toast"); el.textContent=msg; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),2800); }
 function esc(v){return String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]));}
+if(!window.CSS) window.CSS = {};
+if(!CSS.escape) CSS.escape = s => String(s).replace(/[^a-zA-Z0-9_-]/g, "\\$&");
 function slug(s){return String(s||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,48);}
 async function sha256(text){const data=new TextEncoder().encode(text); const hash=await crypto.subtle.digest("SHA-256",data); return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,"0")).join("");}
 function fmtDate(iso){try{return new Intl.DateTimeFormat("de-DE",{weekday:"short",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}).format(new Date(iso));}catch{return iso||""}}
@@ -590,7 +598,7 @@ function render(){
     renderRanking();
     renderSchedule();
     renderGroups();
-    if(state.activeTab === "admin") { renderOverrides(); renderAdminAllTips(); }
+    if(state.activeTab === "admin") { renderOverrides(); renderAdminAllTips(); renderAdminPlayers(); }
   } catch(e) {
     showError("Die Oberfläche konnte nicht vollständig aktualisiert werden: " + (e && e.message ? e.message : e));
   }
@@ -833,6 +841,105 @@ function exportTipsCsv(){
   a.remove();
   URL.revokeObjectURL(url);
 }
+
+function renderAdminPlayers(){
+  if(!state.admin || state.activeTab !== "admin") return;
+  const box = $("adminPlayersBox");
+  if(!box) return;
+
+  const players = Object.values(state.players || {}).sort((a,b) => a.name.localeCompare(b.name));
+  if(!players.length){
+    box.innerHTML = `<p class="muted">Noch keine Teilnehmer registriert.</p>`;
+    return;
+  }
+
+  box.innerHTML = players.map(p => {
+    const tipsCount = Object.values(state.tips || {}).reduce((sum, tipsForMatch) => {
+      const t = tipsForMatch?.[p.id];
+      return sum + (t && t.a !== "" && t.b !== "" && t.a !== undefined && t.b !== undefined ? 1 : 0);
+    }, 0);
+
+    return `<article class="match">
+      <div>
+        <div class="title">${esc(p.name)}</div>
+        <div class="meta">ID: <span class="mono">${esc(p.id)}</span> · ${tipsCount} abgegebene Tipp${tipsCount === 1 ? "" : "s"}</div>
+      </div>
+      <div class="field" style="margin:0">
+        <label>Neuer Name</label>
+        <input data-player-name="${esc(p.id)}" value="${esc(p.name)}">
+      </div>
+      <div class="btnrow">
+        <button class="btn primary" data-rename-player="${esc(p.id)}">Namen speichern</button>
+        <button class="btn danger" data-delete-player="${esc(p.id)}">Teilnehmer löschen</button>
+      </div>
+    </article>`;
+  }).join("");
+
+  box.querySelectorAll("[data-rename-player]").forEach(btn => btn.addEventListener("click", () => renamePlayer(btn.dataset.renamePlayer)));
+  box.querySelectorAll("[data-delete-player]").forEach(btn => btn.addEventListener("click", () => deletePlayer(btn.dataset.deletePlayer)));
+}
+
+async function renamePlayer(playerId){
+  if(!state.admin || !db) return;
+  const input = document.querySelector(`[data-player-name="${CSS.escape(playerId)}"]`);
+  const newName = input?.value?.trim();
+
+  if(!newName){
+    toast("Bitte einen Namen eintragen.");
+    return;
+  }
+
+  const oldPlayer = state.players?.[playerId];
+  if(!oldPlayer){
+    toast("Teilnehmer nicht gefunden.");
+    return;
+  }
+
+  await update(ref(db, `${base}/players/${playerId}`), {
+    name: newName,
+    renamedAt: serverTimestamp()
+  });
+
+  if(state.player?.id === playerId){
+    state.player.name = newName;
+    localStorage.setItem("wm26Player", JSON.stringify(state.player));
+  }
+
+  toast("Teilnehmer umbenannt.");
+}
+
+async function deletePlayer(playerId){
+  if(!state.admin || !db) return;
+  const player = state.players?.[playerId];
+
+  if(!player){
+    toast("Teilnehmer nicht gefunden.");
+    return;
+  }
+
+  const ok = confirm(`Teilnehmer "${player.name}" wirklich löschen?\n\nDabei werden auch alle Tipps dieser Person gelöscht.`);
+  if(!ok) return;
+
+  const updates = {};
+  updates[`${base}/players/${playerId}`] = null;
+
+  for(const matchId of Object.keys(state.tips || {})){
+    if(state.tips?.[matchId]?.[playerId]){
+      updates[`${base}/tips/${matchId}/${playerId}`] = null;
+    }
+  }
+
+  await update(ref(db), updates);
+
+  if(state.player?.id === playerId){
+    localStorage.removeItem("wm26Player");
+    state.player = null;
+  }
+
+  toast("Teilnehmer und Tipps gelöscht.");
+  render();
+}
+
 
 $("loginBtn").addEventListener("click",login);
 $("logoutBtn").addEventListener("click",logout);
